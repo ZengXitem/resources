@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace绑定一个对应的Dao/Mapper接口-->
+<mapper namespace="cn.cinz.admin.mapper.BlogMapper">
+
+    <!--实体与数据库一一对应-->
+    <resultMap id="blogInfo" type="cn.cinz.admin.model.Blog">
+        <result property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="createDate" column="create_date"/>
+        <result property="memo" column="memo" jdbcType="VARCHAR"/>
+        <result property="value" column="value" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="VARCHAR"/>
+        <result property="pageViews" column="page_views" jdbcType="INTEGER"/>
+        <result property="uId" column="u_id" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="blogAddInfo" type="cn.cinz.admin.model.BlogAdd" extends="blogInfo">
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--  查找公开博客  -->
+    <select id="selectBlogList" resultMap="blogAddInfo" parameterType="cn.cinz.admin.model.BlogQuery">
+        select
+            b.id,b.title,b.create_date,b.memo,b.value,b.status,b.page_views,u.name name
+        from
+            blog b
+            left join user u on u.id = b.u_id
+        <where>
+            <if test="status != null and status != ''">
+                b.status = #{status}
+            </if>
+            <if test="title != null and title != '' ">
+                and b.title like concat('%',#{title},'%')
+            </if>
+            <if test="id != null and id != '' ">
+                and b.id = #{id}
+            </if>
+        </where>
+        ORDER BY
+            b.page_views
+        DESC
+            limit #{page},#{limit}
+    </select>
+
+
+    <!--  插入博客  -->
+    <insert id="insertBlog"  parameterType="cn.cinz.admin.model.Blog">
+        insert into blog
+        (id,title,create_date,memo,value,status,page_views,u_id)
+        values
+        (#{id},#{title},#{createDate},#{memo},#{value},#{status},#{pageViews},#{uId})
+    </insert>
+    <select id="countBlog" resultType="java.lang.Integer">
+        SELECT
+            count(*)
+        FROM
+            blog b
+        LEFT JOIN USER u ON u.id = b.u_id
+    </select>
+</mapper>

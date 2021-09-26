@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace绑定一个对应的Dao/Mapper接口-->
+<mapper namespace="cn.cinz.admin.mapper.UserMapper">
+
+    <!--实体与数据库一一对应-->
+    <resultMap id="userInfo" type="cn.cinz.admin.model.User">
+        <result property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="phone" column="phone" jdbcType="VARCHAR"/>
+        <result property="img" column="img" jdbcType="VARCHAR"/>
+        <result property="sex" column="sex" jdbcType="VARCHAR"/>
+        <result property="experience" column="experience" jdbcType="INTEGER"/>
+        <result property="registerDate" column="register_date" jdbcType="TIMESTAMP"/>
+        <result property="endTime" column="end_time" jdbcType="TIMESTAMP"/>
+        <result property="logoutStatus" column="logout_status" jdbcType="INTEGER"/>
+        <result property="authority" column="authority" jdbcType="INTEGER"/>
+    </resultMap>
+    <resultMap id="userQueryMap" type="cn.cinz.admin.model.UserQuery" extends="userInfo">
+        <result property="count" column="count" jdbcType="INTEGER"/>
+        <result property="page" column="page" jdbcType="INTEGER"/>
+        <result property="limit" column="limit" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <select id="countUser" resultType="java.lang.Integer">
+        select
+            count(*) count
+        from
+            user
+    </select>
+
+    <select id="selectUserList" resultMap="userQueryMap">
+        select
+            id,name,phone,img,sex,experience,register_date,end_time,logout_status,authority
+        from
+            user
+        limit #{page},#{limit}
+    </select>
+
+    <!--  用户注册  -->
+    <insert id="insertUser"  parameterType="cn.cinz.admin.model.User">
+        insert into user
+            (id,name,phone,img,sex,experience,register_date,end_time,logout_status,authority)
+        values
+            (#{id},#{name},#{phone},#{img},#{sex},#{experience},#{registerDate},#{endTime},#{logoutStatus},#{authority})
+    </insert>
+
+    <insert id="insertQQUser"  parameterType="cn.cinz.admin.model.User">
+        insert into user
+            (id,name,phone,img,sex,experience,register_date,end_time,logout_status,authority)
+        values
+            (#{id},#{name},#{phone},#{img},#{sex},#{experience},#{registerDate},#{endTime},#{logoutStatus},#{authority})
+    </insert>
+
+    <!--  查询手机用户是否已经注册  -->
+    <select id="selectUser" resultMap="userInfo"  parameterType="cn.cinz.admin.model.User">
+        select
+            id,name,phone,img,sex,experience,register_date,logout_status,authority
+        from
+            user
+        where
+            phone = #{phone}
+    </select>
+
+    <!--  查询QQ用户是否已经注册  -->
+    <select id="selectQQUser" resultMap="userInfo"  parameterType="cn.cinz.admin.model.User">
+        select
+                id,name,phone,img,sex,experience,register_date,logout_status,authority
+        from
+                user
+        where
+                id = #{id}
+    </select>
+
+
+</mapper>
